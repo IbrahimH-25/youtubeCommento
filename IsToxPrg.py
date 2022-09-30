@@ -10,6 +10,50 @@ from sklearn.ensemble import RandomForestClassifier
 import pickle as pk
 from pandas import DataFrame
 
+API_Key = 'AIzaSyDszE0ynG7_rducSH1jbBJt3Y2Pwb6wGoY'
+vidID = "Xb2FKFL8vJ8"
+
+
+def getAllCommentsToLists():
+    youtube = build('youtube','v3',
+                    developerKey=API_Key)
+    video_response_obj=youtube.commentThreads()
+    
+    video_response = video_response_obj.list(
+    part='snippet,replies',
+    videoId=vidID,
+    maxResults = 100
+    ).execute()
+
+    commentList = []
+    commentListId = []
+    for item in video_response['items']:
+        comment = item['snippet']['topLevelComment']['snippet']['textDisplay']
+        commentID = item['snippet']['topLevelComment']['id']
+        commentList.append(comment)
+        commentListId.append(commentID)
+
+    nextPageTken = video_response.get('nextPageToken')
+
+    while nextPageTken:
+        video_response = video_response_obj.list(
+        part='snippet,replies',
+        videoId=vidID,
+        maxResults = 100,
+        pageToken = nextPageTken
+        ).execute()
+
+        for item in video_response['items']:
+            comment = item['snippet']['topLevelComment']['snippet']['textDisplay']
+            commentID = item['snippet']['topLevelComment']['id']
+            commentList.append(comment)
+            commentListId.append(commentID)
+        nextPageTken = video_response.get('nextPageToken')
+        print(nextPageTken)
+    
+    return commentList,commentListId
+
+
 def mainProcess():
     API_Key = 'AIzaSyDszE0ynG7_rducSH1jbBJt3Y2Pwb6wGoY'
     vidID = "Xb2FKFL8vJ8"
@@ -22,30 +66,17 @@ def mainProcess():
     catagoryList = dataDF.columns.values.tolist()[3:]
     catagoryList
 
-
-    youtube = build('youtube','v3',
-                    developerKey=API_Key)
-    video_response=youtube.commentThreads().list(
-    part='snippet,replies',
-    videoId=vidID
-    ).execute()
-
-    commentList = []
-    commentListId = []
-    for item in video_response['items']:
-        comment = item['snippet']['topLevelComment']['snippet']['textDisplay']
-        commentID = item['snippet']['topLevelComment']['id']
-        commentList.append(comment)
-        commentListId.append(commentID)
+    commentList,commentListId = getAllCommentsToLists()
+   
 
     DFTest = DataFrame(data = {'CommentId': commentListId,'VideoId': vidID,'Text': commentList})
 
         
 
-    item = video_response['items'][0]
+    '''item = video_response['items'][0]
     comment = item['snippet']['topLevelComment']['snippet']['textDisplay']
     commentID = item['snippet']['topLevelComment']['id']
-    print(comment,'\n',commentID)
+    print(comment,'\n',commentID)'''
 
     dataTestDF = DFTest[['CommentId','VideoId','Text']]
     for cat in catagoryList:
