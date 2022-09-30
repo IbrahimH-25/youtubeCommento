@@ -11,7 +11,9 @@ import pickle as pk
 from pandas import DataFrame
 
 API_Key = 'AIzaSyDszE0ynG7_rducSH1jbBJt3Y2Pwb6wGoY'
-vidID = "Xb2FKFL8vJ8"
+vidID = "LsrfcUgyzJw"
+
+#vidID = "Xb2FKFL8vJ8"
 
 
 def getAllCommentsToLists():
@@ -56,7 +58,8 @@ def getAllCommentsToLists():
 
 def mainProcess():
     API_Key = 'AIzaSyDszE0ynG7_rducSH1jbBJt3Y2Pwb6wGoY'
-    vidID = "Xb2FKFL8vJ8"
+    vidID = "LsrfcUgyzJw"
+    #vidID = "Xb2FKFL8vJ8"
     #getting data
     data = r'youtoxic_english_1000.csv'
     dataDF = read_csv(data)
