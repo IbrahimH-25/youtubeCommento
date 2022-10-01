@@ -1,6 +1,7 @@
 
 #dependancies
-from pandas import read_csv
+from os import read
+from pandas import api, read_csv
 from googleapiclient.discovery import build
 from numpy import array,unique
 import gravityai as grav
@@ -10,13 +11,20 @@ from sklearn.ensemble import RandomForestClassifier
 import pickle as pk
 from pandas import DataFrame
 
-API_Key = 'AIzaSyDszE0ynG7_rducSH1jbBJt3Y2Pwb6wGoY'
-vidID = "LsrfcUgyzJw"
-
-#vidID = "Xb2FKFL8vJ8"
 
 
-def getAllCommentsToLists():
+
+
+def getAPIKeyAndVideoId():
+    with open('input.txt','r') as inputFile:
+        inStream = inputFile.read()
+    wordStream = inStream.split(',')
+    apiKey = wordStream[0]
+    videoId = wordStream[1]
+    return apiKey,videoId
+
+
+def getAllCommentsToLists(API_Key,vidID):
     youtube = build('youtube','v3',
                     developerKey=API_Key)
     video_response_obj=youtube.commentThreads()
@@ -57,19 +65,27 @@ def getAllCommentsToLists():
 
 
 def mainProcess():
-    API_Key = 'AIzaSyDszE0ynG7_rducSH1jbBJt3Y2Pwb6wGoY'
-    vidID = "LsrfcUgyzJw"
+    API_Key = ''
+
+    vidID = ''
+
+    try :
+        API_Key,vidID =  getAPIKeyAndVideoId()
+        print(API_Key,vidID)
+    except:
+        print("ERROR: Cannot find api key or video id in input.txt") 
     #vidID = "Xb2FKFL8vJ8"
     #getting data
-    data = r'youtoxic_english_1000.csv'
-    dataDF = read_csv(data)
-    dataDF
 
+    if API_Key == '' or vidID == '':
+        raise Exception("ERROR: API_Key or vidID not set")
+
+
+    
+    catagoryList = ['IsToxic', 'IsAbusive', 'IsThreat', 'IsProvocative', 'IsObscene', 'IsHatespeech', 'IsRacist', 'IsNationalist', 'IsSexist', 'IsHomophobic', 'IsReligiousHate', 'IsRadicalism']
     #making categories
-    catagoryList = dataDF.columns.values.tolist()[3:]
-    catagoryList
 
-    commentList,commentListId = getAllCommentsToLists()
+    commentList,commentListId = getAllCommentsToLists(API_Key,vidID)
    
 
     DFTest = DataFrame(data = {'CommentId': commentListId,'VideoId': vidID,'Text': commentList})
