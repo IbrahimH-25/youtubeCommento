@@ -115,4 +115,4 @@ def mainProcess():
     print(dataTestDF)
     dataTestDF.to_csv('commentAnalysis.csv')
 
-mainProcess()
+grav.wait_for_requests(mainProcess)

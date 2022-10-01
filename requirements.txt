@@ -2,3 +2,4 @@ gravityai
 numpy
 pandas
 sklearn
+google-api-python-client
